@@ -398,6 +398,10 @@ PrefabInstance:
     - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 1796040788}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: 
       objectReference: {fileID: 0}
     - target: {fileID: 794478315206359212, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
       propertyPath: m_fontSize
@@ -628,38 +632,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
---- !u!114 &647928310 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
-  m_PrefabInstance: {fileID: 647928309}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!224 &647928311 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 9085654310634940126, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
   m_PrefabInstance: {fileID: 647928309}
   m_PrefabAsset: {fileID: 0}
---- !u!224 &647928312 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5064307318651295503, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
-  m_PrefabInstance: {fileID: 647928309}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &647928313 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2820777936782199953, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
-  m_PrefabInstance: {fileID: 647928309}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_InputField
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1344,9 +1321,9 @@ GameObject:
   - component: {fileID: 1796040794}
   - component: {fileID: 1796040793}
   - component: {fileID: 1796040792}
-  - component: {fileID: 1796040791}
   - component: {fileID: 1796040790}
   - component: {fileID: 1796040789}
+  - component: {fileID: 1796040796}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1390,22 +1367,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RaycastTriggerInteraction: 1
---- !u!114 &1796040791
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1796040788}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 061cdb63d74c71e4fafcaa19e2c5996f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueManager
-  inputField: {fileID: 647928313}
-  historyContent: {fileID: 647928312}
-  submitButton: {fileID: 647928310}
-  dialogueItemPrefab: {fileID: 4986067367414043233, guid: e1b22b90520f867429a5be3babede2a2, type: 3}
 --- !u!114 &1796040792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1473,6 +1434,35 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1796040796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1796040788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd492ade017447498215453c1f3b5bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRInterview.AI.DialogueManager_AI
+  inputField: {fileID: 0}
+  submitButton: {fileID: 0}
+  endSessionButton: {fileID: 0}
+  historyContent: {fileID: 0}
+  scrollRect: {fileID: 0}
+  dialogueItemPrefab: {fileID: 4986067367414043233, guid: e1b22b90520f867429a5be3babede2a2, type: 3}
+  rapportSlider: {fileID: 0}
+  rapportScoreText: {fileID: 0}
+  statusHintText: {fileID: 0}
+  summaryPanel: {fileID: 0}
+  summaryScoreText: {fileID: 0}
+  summaryCommentText: {fileID: 0}
+  targetNPCAnim: {fileID: 0}
+  currentUserId: trainee_001
+  currentCaseId: persona_1
+  selectedDuration: 30
+  currentSessionId: 
 --- !u!1 &1961442127
 GameObject:
   m_ObjectHideFlags: 0

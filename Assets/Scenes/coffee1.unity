@@ -215,11 +215,6 @@ Transform:
   - {fileID: 1280493029}
   m_Father: {fileID: 1224389466}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!224 &365577755 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 5064307318651295503, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
-  m_PrefabInstance: {fileID: 2301498971368001183}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &401460018
 GameObject:
   m_ObjectHideFlags: 0
@@ -491,9 +486,9 @@ GameObject:
   - component: {fileID: 547844064}
   - component: {fileID: 547844067}
   - component: {fileID: 547844066}
-  - component: {fileID: 547844068}
   - component: {fileID: 547844069}
   - component: {fileID: 547844070}
+  - component: {fileID: 547844071}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -568,22 +563,6 @@ Canvas:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
---- !u!114 &547844068
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 547844063}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 061cdb63d74c71e4fafcaa19e2c5996f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueManager
-  inputField: {fileID: 1742481453}
-  historyContent: {fileID: 365577755}
-  submitButton: {fileID: 900432762}
-  dialogueItemPrefab: {fileID: 4986067367414043233, guid: e1b22b90520f867429a5be3babede2a2, type: 3}
 --- !u!114 &547844069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -620,6 +599,35 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &547844071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 547844063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd492ade017447498215453c1f3b5bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::XRInterview.AI.DialogueManager_AI
+  inputField: {fileID: 0}
+  submitButton: {fileID: 900432762}
+  endSessionButton: {fileID: 0}
+  historyContent: {fileID: 0}
+  scrollRect: {fileID: 0}
+  dialogueItemPrefab: {fileID: 4986067367414043233, guid: e1b22b90520f867429a5be3babede2a2, type: 3}
+  rapportSlider: {fileID: 0}
+  rapportScoreText: {fileID: 0}
+  statusHintText: {fileID: 0}
+  summaryPanel: {fileID: 0}
+  summaryScoreText: {fileID: 0}
+  summaryCommentText: {fileID: 0}
+  targetNPCAnim: {fileID: 0}
+  currentUserId: trainee_001
+  currentCaseId: persona_1
+  selectedDuration: 30
+  currentSessionId: 
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -2074,17 +2082,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3475118261464492563, guid: 9f3369e30fbd31f4bb596b1a99babe83, type: 3}
   m_PrefabInstance: {fileID: 1280493028}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1742481453 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 2820777936782199953, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
-  m_PrefabInstance: {fileID: 2301498971368001183}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TMP_InputField
 --- !u!1 &1921388194
 GameObject:
   m_ObjectHideFlags: 0
@@ -2125,8 +2122,36 @@ PrefabInstance:
     m_TransformParent: {fileID: 547844064}
     m_Modifications:
     - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 547844071}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: OnSubmitMessage
+      objectReference: {fileID: 0}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: XRInterview.AI.DialogueManager_AI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 233637525439695528, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: MyInputFieldManager, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 794478315206359212, guid: 6d1cb1db4b58b3849aa884a451f1832b, type: 3}
       propertyPath: m_fontSize

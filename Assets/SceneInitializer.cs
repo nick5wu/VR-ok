@@ -25,6 +25,7 @@ public class SceneInitializer : MonoBehaviour
                 // 成功生成 Prefab
                 GameObject npc = Instantiate(persona.avatar3DPrefab, spawnPoint.position, spawnPoint.rotation);
                 Debug.Log("【NPC 生成成功】：" + persona.name);
+                BindNPCToAI(npc);
                 return;
             }
         }
@@ -35,12 +36,34 @@ public class SceneInitializer : MonoBehaviour
         
         if (fallbackPrefab != null)
         {
-            Instantiate(fallbackPrefab, spawnPoint.position, spawnPoint.rotation);
+            GameObject npc = Instantiate(fallbackPrefab, spawnPoint.position, spawnPoint.rotation);
             Debug.Log("【NPC 備用生成成功】：" + familyName);
+            BindNPCToAI(npc);
         }
         else
         {
             Debug.LogError("【生成失敗】請檢查 ScriptableObject 裡是否有拉入 avatar3DPrefab，或 Resources/Avatars/ 路徑是否正確！");
+        }
+    }
+
+    /// <summary>
+    /// 自動為動態生成的 NPC 確保掛載 NPCAnimationController 並綁定至 AI 對話管理器
+    /// </summary>
+    private void BindNPCToAI(GameObject npc)
+    {
+        if (npc == null) return;
+
+        var npcAnim = npc.GetComponentInChildren<XRInterview.AI.NPCAnimationController>();
+        if (npcAnim == null)
+        {
+            // 若為原始 FBX 或尚未預先掛載腳本之 Prefab，自動動態附加
+            npcAnim = npc.AddComponent<XRInterview.AI.NPCAnimationController>();
+        }
+
+        if (XRInterview.AI.DialogueManager_AI.Instance != null)
+        {
+            XRInterview.AI.DialogueManager_AI.Instance.BindNPC(npcAnim);
+            Debug.Log("【AI 綁定成功】已將動態生成之 NPC 綁定至 DialogueManager_AI");
         }
     }
 }
