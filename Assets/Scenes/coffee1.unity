@@ -460,6 +460,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneInitializer
   spawnPoint: {fileID: 1921388195}
+  currentSceneConfig: {fileID: 11400000, guid: 8e5a90615e9c41343b503ff9fbf47982, type: 2}
 --- !u!4 &496831902
 Transform:
   m_ObjectHideFlags: 0
@@ -2012,14 +2013,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1224389463}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.07753002, y: 0.6978103, z: -0.07659492, w: 0.7079429}
-  m_LocalPosition: {x: 84.026, y: 0.596, z: -32.362}
+  m_LocalRotation: {x: -0.087497294, y: -0.6848934, z: 0.083438344, w: -0.7185425}
+  m_LocalPosition: {x: 83.849, y: 0.393, z: -32.402}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 308097610}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 13.889, y: 87.253, z: -0.003}
 --- !u!1001 &1280493028
 PrefabInstance:
   m_ObjectHideFlags: 0

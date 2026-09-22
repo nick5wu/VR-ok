@@ -1,9 +1,24 @@
 fileFormatVersion: 2
-guid: fc523f88f58e6e44e865fe9e3ae26ac0
+guid: e1a7ca58c23a9d046b1c2a3d162bb0bd
 ModelImporter:
   serializedVersion: 24200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Humano_Posed_2606-004-Man_02_LOD0_4K.001
+    second: {fileID: 2100000, guid: 95b1c2ba1f7afb947ae24af40d1be7b4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Humano_Posed_2606-004-Man_Accessories-01_02_LOD0_2K
+    second: {fileID: 2100000, guid: 61b23a13806176c4dbb5aedf44419863, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Humano_Posed_2606-004-Man_Accessories-01_02_LOD0_2K.001
+    second: {fileID: 2100000, guid: 6657b5cc3eb5d6240918b240ad08167c, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -170,7 +170,7 @@ public class InterviewMenuManager : MonoBehaviour
         accountDict.Add(newAccount, newPassword);
         userAccountList.Add(newUser);
 
-        // **永久寫入硬碟儲存**
+        // 永久寫入硬碟儲存
         SaveAccounts();
 
         Debug.Log($"【註冊成功並已寫入儲存】新帳號：{newAccount}");
@@ -197,13 +197,55 @@ public class InterviewMenuManager : MonoBehaviour
         SceneManager.LoadScene(sceneName);
     }
 
+    // ==========================================
+    // 返回功能（供按鈕 On Click 使用）
+    // ==========================================
+
+    /// <summary>
+    /// 【通用返回上一步】綁定給通用返回按鈕使用
+    /// </summary>
+    public void GoBack()
+    {
+        // 1. 若在註冊彈窗，先關閉彈窗回到登入頁
+        if (registerPanel != null && registerPanel.activeSelf)
+        {
+            CloseRegisterPanel();
+        }
+        // 2. 若在場景選擇頁 (Page2)，返回家庭選擇頁 (Page1)
+        else if (page2Scene != null && page2Scene.activeSelf)
+        {
+            GoBackToFamily();
+        }
+        // 3. 若在家庭選擇頁 (Page1)，返回登入頁 (Page0)
+        else if (page1Family != null && page1Family.activeSelf)
+        {
+            GoBackToLogin();
+        }
+    }
+
+    /// <summary>
+    /// 返回家庭選擇頁面
+    /// </summary>
     public void GoBackToFamily()
     {
         ShowPage(page1Family);
     }
 
+    /// <summary>
+    /// 返回登入頁面
+    /// </summary>
+    public void GoBackToLogin()
+    {
+        ShowPage(page0Login);
+    }
+
+    // ==========================================
+    // 頁面切換控制與 UI 安全防呆
+    // ==========================================
+
     private void ShowPage(GameObject targetPage)
     {
+        // 加上完整空值防呆，避免換場景時 UI 被 Destroy 造成 MissingReferenceException 報錯
         if (page0Login != null) page0Login.SetActive(page0Login == targetPage);
         if (registerPanel != null) registerPanel.SetActive(false);
         if (page1Family != null) page1Family.SetActive(page1Family == targetPage);

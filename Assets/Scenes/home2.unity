@@ -426,6 +426,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SceneInitializer
   spawnPoint: {fileID: 1176345208}
+  currentSceneConfig: {fileID: 11400000, guid: 02f1a3925d2669f4fba2cccb7948ca96, type: 2}
 --- !u!4 &728139296
 Transform:
   m_ObjectHideFlags: 0

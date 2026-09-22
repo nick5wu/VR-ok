@@ -16,3 +16,36 @@ MonoBehaviour:
   sceneDisplayName: "\u8D85\u5546 1"
   previewSprite: {fileID: 0}
   unitySceneName: convenience store
+  personaSettings:
+  - personaData: {fileID: 11400000, guid: 44f164bf515ee2a4887a108ccbebb2a4, type: 2}
+    positionOffset: {x: 0.202, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 1, y: 1, z: 1}
+  - personaData: {fileID: 11400000, guid: 5d5d8bfa53c24ac4f97d0b6f8e1c2b35, type: 2}
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 1, y: 1, z: 1}
+  - personaData: {fileID: 11400000, guid: 1ebb1663eba56034c9f71838c14c5a3e, type: 2}
+    positionOffset: {x: -0.011, y: 0.95, z: -0.228}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 1, y: 1, z: 1}
+  - personaData: {fileID: 11400000, guid: f1d13a86a5784b545b7b850b164855bf, type: 2}
+    positionOffset: {x: 0.12, y: 0.033, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: fb8bd03c1afa4a049aea48775fa80e70, type: 2}
+    positionOffset: {x: 0.148, y: 0, z: -0.029}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: da8445db085f67d418963badab20e1c2, type: 2}
+    positionOffset: {x: 0.208, y: 0.114, z: -0.247}
+    rotationOffset: {x: 0, y: -2.589, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: 0152ecc5077260342937ca0d8251da93, type: 2}
+    positionOffset: {x: 0, y: 0, z: 0}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 1, y: 1, z: 1}
+  - personaData: {fileID: 11400000, guid: 039da8fba61aaf549b0b01b853bd0cb6, type: 2}
+    positionOffset: {x: 0.17, y: -0.084, z: -0.254}
+    rotationOffset: {x: 0, y: 0, z: 0}
+    customScale: {x: 0.9, y: 0.9, z: 0.9}

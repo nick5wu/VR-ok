@@ -16,3 +16,36 @@ MonoBehaviour:
   sceneDisplayName: "\u5496\u5561\u5EF3 1"
   previewSprite: {fileID: 0}
   unitySceneName: coffee1
+  personaSettings:
+  - personaData: {fileID: 11400000, guid: 44f164bf515ee2a4887a108ccbebb2a4, type: 2}
+    positionOffset: {x: 85.16, y: 0.496, z: -32.45583}
+    rotationOffset: {x: -89.98, y: -84.267, z: 0}
+    customScale: {x: 1.7956, y: 1.7956, z: 1.7956}
+  - personaData: {fileID: 11400000, guid: 5d5d8bfa53c24ac4f97d0b6f8e1c2b35, type: 2}
+    positionOffset: {x: 85.421, y: 0.471, z: -32.3689}
+    rotationOffset: {x: 0, y: -100.04, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: 1ebb1663eba56034c9f71838c14c5a3e, type: 2}
+    positionOffset: {x: 85.221, y: 0.501, z: -32.588}
+    rotationOffset: {x: -90, y: 0, z: -94.358}
+    customScale: {x: 1.810055, y: 1.810055, z: 1.810055}
+  - personaData: {fileID: 11400000, guid: f1d13a86a5784b545b7b850b164855bf, type: 2}
+    positionOffset: {x: 84.886, y: 0.539, z: -32.471}
+    rotationOffset: {x: 0, y: -7.431, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: fb8bd03c1afa4a049aea48775fa80e70, type: 2}
+    positionOffset: {x: 84.95, y: 0.55, z: -32.521}
+    rotationOffset: {x: 0, y: -94.007, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: da8445db085f67d418963badab20e1c2, type: 2}
+    positionOffset: {x: 85.179, y: 0.507, z: -32.543}
+    rotationOffset: {x: 0, y: -85.753, z: 0}
+    customScale: {x: 0.8, y: 0.8, z: 0.8}
+  - personaData: {fileID: 11400000, guid: 0152ecc5077260342937ca0d8251da93, type: 2}
+    positionOffset: {x: 85.151, y: 0.501, z: -32.47}
+    rotationOffset: {x: 0, y: -86.123, z: 0}
+    customScale: {x: 0.8939301, y: 0.8939301, z: 0.8939301}
+  - personaData: {fileID: 11400000, guid: 039da8fba61aaf549b0b01b853bd0cb6, type: 2}
+    positionOffset: {x: 84.941, y: 0.581, z: -32.445}
+    rotationOffset: {x: -90, y: 0, z: -116.378}
+    customScale: {x: 0.77372, y: 0.77372, z: 0.77372}

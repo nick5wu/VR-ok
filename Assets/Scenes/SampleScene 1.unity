@@ -1446,10 +1446,10 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 0152ecc5077260342937ca0d8251da93, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "\u5C0F\u5B87\u5BB6"
@@ -3181,10 +3181,10 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 5d5d8bfa53c24ac4f97d0b6f8e1c2b35, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "\u5C0F\u6210\u5BB6"
@@ -3503,10 +3503,10 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 039da8fba61aaf549b0b01b853bd0cb6, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "\u5C0F\u6770\u5BB6"
@@ -3834,7 +3834,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u5C0F\u6210\u5BB6"
+  m_text: "\u5C0F\u9673\u5BB6"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: df31ea52f1dc1f044867bf664ad5dcb1, type: 2}
   m_sharedMaterial: {fileID: 4745226872523833106, guid: df31ea52f1dc1f044867bf664ad5dcb1, type: 2}
@@ -6634,10 +6634,10 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: da8445db085f67d418963badab20e1c2, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "\u5C0F\u4E56\u5BB6"
@@ -7560,10 +7560,10 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: 1ebb1663eba56034c9f71838c14c5a3e, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "\u5C0F\u6771\u5BB6"
@@ -7693,13 +7693,13 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: fb8bd03c1afa4a049aea48775fa80e70, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: "\u5C0F\u6210\u5BB6"
+          m_StringArgument: "\u5C0F\u9673\u5BB6"
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1609890085
@@ -8237,10 +8237,10 @@ MonoBehaviour:
       - m_Target: {fileID: 74681691}
         m_TargetAssemblyTypeName: InterviewMenuManager, Assembly-CSharp
         m_MethodName: SelectFamily
-        m_Mode: 5
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgument: {fileID: 11400000, guid: f1d13a86a5784b545b7b850b164855bf, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.ScriptableObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: "\u5C0F\u5149\u5BB6"
