@@ -56,3 +56,14 @@
    * `【AI 綁定成功】已將動態生成之 NPC 綁定至 DialogueManager_AI`
    * `<color=green>[DialogueManager_AI] 場次初始化成功！</color>`
 5. 對話框自動顯示家長問候語，打字後按 Enter 或點擊按鈕即可與 AI 進行即時訪談互動！
+
+---
+
+## 🔌 連接 XRUItest 後台 (Backend Integration)
+
+後端為 [nick5wu/XRUItest](https://github.com/nick5wu/XRUItest) 的 `server/`（Express，預設 Port `3001`）。所有 `/api/*` 都需通過 `requireAuth`。
+
+* **過渡期（本機／測試）**：`GeminiApiClient` 每個請求都會帶 `X-Client-Platform: unity-vr` 標頭。後端 `server/.env` 設定 `ALLOW_VR_UNAUTHENTICATED=true` 即可放行（身分取自請求 body 的 `user_id`）。**不得用於正式環境與真實學員帳號。**
+* **正式（Supabase 登入）**：取得學員的 Supabase JWT 後呼叫 `GeminiApiClient.Instance.SetAccessToken(jwt)`，之後所有請求自動附 `Authorization: Bearer <jwt>`，場次 `user_id` 由後端從 token 取得。
+* **`Api Base Url`**：本機 `http://127.0.0.1:3001`；經入口網站反向代理時為 `https://<入口網域>/xr-api`。
+* **結算回應**：`SessionEndResponse.evaluation_report` 已對齊後端六大面向（`dimension_1_rapport` … `dimension_6_time_mgmt`、`total_score`、`feedback_comments`、`strengths`、`suggestions`），並於結束時回報 `actual_duration`（分鐘）。
