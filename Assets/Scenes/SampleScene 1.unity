@@ -882,6 +882,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::XRInterview.AI.GeminiApiClient
   apiBaseUrl: https://xr-interview-backend-1019562597305.asia-east1.run.app
   timeoutSeconds: 15
+  authToken: 
 --- !u!4 &145039907
 Transform:
   m_ObjectHideFlags: 0
