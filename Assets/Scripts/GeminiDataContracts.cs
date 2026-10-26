@@ -55,6 +55,51 @@ namespace XRInterview.AI
     }
 
     // =========================================================================
+    // 教練指令：暫停求救 / 盤點資訊 DTO
+    // =========================================================================
+    [Serializable]
+    public class CoachRequest
+    {
+        public string session_id;
+    }
+
+    [Serializable]
+    public class CoachHelpResponse
+    {
+        public bool success;
+        public string session_id;
+        public string coach_message;          // 目前觀察到的卡點
+        public string[] suggested_questions;  // 1~2 句示範問法
+    }
+
+    [Serializable]
+    public class InventoryItemData
+    {
+        public string field;                  // IFSP 前置資訊項目
+        public string status;                 // "obtained" | "pending" | "missing"
+        public string note;                   // 依據或缺少什麼
+    }
+
+    [Serializable]
+    public class InventoryProgress
+    {
+        public int child_function;            // 兒童功能 (0-100)
+        public int daily_routine;             // 日常作息 (0-100)
+        public int family_needs;              // 家庭需求 (0-100)
+        public int strengths_resources;       // 優勢與資源 (0-100)
+    }
+
+    [Serializable]
+    public class InventoryResponse
+    {
+        public bool success;
+        public string session_id;
+        public InventoryItemData[] items;
+        public string priority_hint;          // 下一步優先補問方向
+        public InventoryProgress progress;    // 四大範疇達成率
+    }
+
+    // =========================================================================
     // 步驟 ③：結束訪談結算 (Session End) DTO
     // =========================================================================
     [Serializable]

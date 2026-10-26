@@ -58,6 +58,10 @@ namespace XRInterview.AI
         private bool endRequested;
         private bool isQuitting;
         private TMP_Text endButtonLabel;
+        private Button helpButton;
+        private Button inventoryButton;
+        private CoachPanelUI coachPanel;
+        private bool coachBusy;
         private const string EndLabelNormal = "結束訪談";
         private const string EndLabelConfirm = "再按一次確認";
 
@@ -348,6 +352,7 @@ namespace XRInterview.AI
             SetInputInteractable(false);
             isSessionActive = false;
             SetTimerVisible(false);
+            SetSessionButtonsVisible(false);
             if (statusHintText != null) statusHintText.text = "正在進行訪談結算，生成 AI 評估報告...";
 
             SessionEndRequest endReq = new SessionEndRequest
@@ -363,6 +368,9 @@ namespace XRInterview.AI
         {
             if (statusHintText != null) statusHintText.text = "訪談已順利結束！";
             AppendDialogueBubble("【系統】", $"🎉 訪談結束！最終關係分數：{response.final_rapport_score}，總對話輪數：{response.total_dialogue_turns}", Color.green);
+
+            // 場景未綁定結算面板時，以程式建立的報告面板顯示六面向成績
+            if (summaryPanel == null) ShowFinalReport(response);
 
             // 顯示結算報告面板
             if (summaryPanel != null)
@@ -458,6 +466,7 @@ namespace XRInterview.AI
             isSessionActive = false;
             SetInputInteractable(false);
             SetTimerVisible(false);
+            SetSessionButtonsVisible(false);
             if (statusHintText != null) statusHintText.text = "因閒置過久，訪談已中止。";
             AppendDialogueBubble("【系統】", "（閒置過久，本次訪談已中止，未進行評分）", Color.gray);
             SendAbort(reason);
@@ -504,7 +513,8 @@ namespace XRInterview.AI
         }
 
         /// <summary>
-        /// 若 Inspector 未綁定，於程式中建立倒數計時文字與結束按鈕 (沿用輸入框字型)。
+        /// 若 Inspector 未綁定，於程式中建立倒數計時、教練按鈕、結束按鈕與教練/報告面板 (沿用輸入框字型)。
+        /// 畫布為 ConstantPixelSize，尺寸依螢幕高度縮放。
         /// </summary>
         private void BuildRuntimeUI()
         {
@@ -516,6 +526,7 @@ namespace XRInterview.AI
             }
             if (parent == null) return;
 
+            float s = CoachPanelUI.ComputeScale();
             TMP_FontAsset font = inputField != null && inputField.textComponent != null
                 ? inputField.textComponent.font : null;
 
@@ -526,45 +537,286 @@ namespace XRInterview.AI
                 rect.SetParent(parent, false);
                 rect.anchorMin = rect.anchorMax = new Vector2(1f, 1f);
                 rect.pivot = new Vector2(1f, 1f);
-                rect.anchoredPosition = new Vector2(-20f, -20f);
-                rect.sizeDelta = new Vector2(320f, 60f);
+                rect.anchoredPosition = new Vector2(-20f * s, -20f * s);
+                rect.sizeDelta = new Vector2(320f * s, 60f * s);
                 timerText = go.GetComponent<TextMeshProUGUI>();
                 if (font != null) timerText.font = font;
-                timerText.fontSize = 36f;
+                timerText.fontSize = 36f * s;
                 timerText.alignment = TextAlignmentOptions.Right;
                 timerText.raycastTarget = false;
                 timerText.text = $"剩餘 {int.Parse(selectedDuration):00}:00";
             }
 
+            Vector2 btnSize = new Vector2(240f * s, 72f * s);
+            float step = (72f + 14f) * s;
+
             if (endSessionButton == null)
             {
-                var go = new GameObject("EndSessionButton", typeof(RectTransform), typeof(Image), typeof(Button));
-                var rect = go.GetComponent<RectTransform>();
-                rect.SetParent(parent, false);
-                rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-                rect.pivot = new Vector2(1f, 0f);
-                rect.anchoredPosition = new Vector2(-20f, 20f);
-                rect.sizeDelta = new Vector2(240f, 72f);
-                go.GetComponent<Image>().color = new Color(0.75f, 0.2f, 0.2f, 0.95f);
-                endSessionButton = go.GetComponent<Button>();
-
-                var labelGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-                var labelRect = labelGo.GetComponent<RectTransform>();
-                labelRect.SetParent(rect, false);
-                labelRect.anchorMin = Vector2.zero;
-                labelRect.anchorMax = Vector2.one;
-                labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
-                endButtonLabel = labelGo.GetComponent<TextMeshProUGUI>();
-                if (font != null) endButtonLabel.font = font;
-                endButtonLabel.fontSize = 30f;
-                endButtonLabel.alignment = TextAlignmentOptions.Center;
-                endButtonLabel.color = Color.white;
-                endButtonLabel.raycastTarget = false;
-                endButtonLabel.text = EndLabelNormal;
+                endSessionButton = CreateRuntimeButton(parent, "EndSessionButton", EndLabelNormal,
+                    new Color(0.75f, 0.20f, 0.20f, 0.95f), new Vector2(-20f * s, 20f * s), btnSize, font, 30f * s, out endButtonLabel);
             }
             else if (endButtonLabel == null)
             {
                 endButtonLabel = endSessionButton.GetComponentInChildren<TMP_Text>(true);
+            }
+
+            if (inventoryButton == null)
+            {
+                inventoryButton = CreateRuntimeButton(parent, "InventoryButton", "盤點資訊",
+                    new Color(0.18f, 0.50f, 0.38f, 0.95f), new Vector2(-20f * s, 20f * s + step), btnSize, font, 30f * s, out _);
+                inventoryButton.onClick.AddListener(OnInventoryClicked);
+            }
+
+            if (helpButton == null)
+            {
+                helpButton = CreateRuntimeButton(parent, "HelpButton", "暫停求救",
+                    new Color(0.20f, 0.40f, 0.80f, 0.95f), new Vector2(-20f * s, 20f * s + 2f * step), btnSize, font, 30f * s, out _);
+                helpButton.onClick.AddListener(OnHelpClicked);
+            }
+
+            if (coachPanel == null)
+            {
+                coachPanel = CoachPanelUI.Create(parent, font);
+            }
+        }
+
+        private static Button CreateRuntimeButton(RectTransform parent, string name, string label, Color color,
+            Vector2 anchoredPos, Vector2 size, TMP_FontAsset font, float fontSize, out TMP_Text labelOut)
+        {
+            var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(Button));
+            var rect = go.GetComponent<RectTransform>();
+            rect.SetParent(parent, false);
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
+            rect.pivot = new Vector2(1f, 0f);
+            rect.anchoredPosition = anchoredPos;
+            rect.sizeDelta = size;
+            go.GetComponent<Image>().color = color;
+
+            var labelGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+            var labelRect = labelGo.GetComponent<RectTransform>();
+            labelRect.SetParent(rect, false);
+            labelRect.anchorMin = Vector2.zero;
+            labelRect.anchorMax = Vector2.one;
+            labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
+            var tmp = labelGo.GetComponent<TextMeshProUGUI>();
+            if (font != null) tmp.font = font;
+            tmp.fontSize = fontSize;
+            tmp.alignment = TextAlignmentOptions.Midline;
+            tmp.color = Color.white;
+            tmp.raycastTarget = false;
+            tmp.text = label;
+            labelOut = tmp;
+            return go.GetComponent<Button>();
+        }
+
+        // =========================================================================
+        // 教練指令：暫停求救 / 盤點資訊 (NPC 凍結，不寫入對話紀錄)
+        // =========================================================================
+        private bool CanUseCoach()
+        {
+            return isSessionActive && !endRequested && !coachBusy
+                && !string.IsNullOrEmpty(currentSessionId)
+                && GeminiApiClient.Instance != null
+                && (coachPanel == null || !coachPanel.IsOpen);
+        }
+
+        public void OnHelpClicked()
+        {
+            if (!CanUseCoach()) return;
+            BeginCoachRequest("教練分析中…");
+            GeminiApiClient.Instance.RequestCoachHelp(
+                new CoachRequest { session_id = currentSessionId }, OnHelpSuccess, OnCoachError);
+        }
+
+        public void OnInventoryClicked()
+        {
+            if (!CanUseCoach()) return;
+            BeginCoachRequest("教練盤點資訊中…");
+            GeminiApiClient.Instance.RequestInventory(
+                new CoachRequest { session_id = currentSessionId }, OnInventorySuccess, OnCoachError);
+        }
+
+        private void BeginCoachRequest(string hint)
+        {
+            coachBusy = true;
+            MarkActivity();
+            SetInputInteractable(false);
+            SetCoachButtonsInteractable(false);
+            if (statusHintText != null) statusHintText.text = hint;
+        }
+
+        private void EndCoachRequest()
+        {
+            coachBusy = false;
+            if (statusHintText != null) statusHintText.text = string.Empty;
+        }
+
+        private void OnHelpSuccess(CoachHelpResponse response)
+        {
+            EndCoachRequest();
+            if (coachPanel == null) { RestoreAfterCoach(); return; }
+
+            coachPanel.Open("【教練｜暫停求救】", RestoreAfterCoach);
+            coachPanel.AddHeading("目前觀察");
+            coachPanel.AddParagraph(string.IsNullOrEmpty(response.coach_message) ? "（教練沒有特別的觀察）" : response.coach_message);
+
+            if (response.suggested_questions != null && response.suggested_questions.Length > 0)
+            {
+                coachPanel.AddHeading("建議問法");
+                foreach (var q in response.suggested_questions)
+                {
+                    if (!string.IsNullOrWhiteSpace(q)) coachPanel.AddParagraph("．" + q, new Color(0.65f, 0.95f, 0.75f));
+                }
+            }
+            coachPanel.AddSpacer(8f);
+            coachPanel.AddParagraph("按「關閉」回到訪談，家長會繼續等你發問。", new Color(0.65f, 0.68f, 0.75f));
+        }
+
+        private void OnInventorySuccess(InventoryResponse response)
+        {
+            EndCoachRequest();
+            if (coachPanel == null) { RestoreAfterCoach(); return; }
+
+            coachPanel.Open("【教練｜盤點資訊】", RestoreAfterCoach);
+
+            if (response.progress != null)
+            {
+                coachPanel.AddHeading("IFSP 四大範疇達成率");
+                AddProgressBar("兒童功能", response.progress.child_function);
+                AddProgressBar("日常作息", response.progress.daily_routine);
+                AddProgressBar("家庭需求", response.progress.family_needs);
+                AddProgressBar("優勢與資源", response.progress.strengths_resources);
+            }
+
+            if (response.items != null && response.items.Length > 0)
+            {
+                coachPanel.AddHeading("IFSP 前置資訊檢核");
+                foreach (var item in response.items)
+                {
+                    string tag; Color color;
+                    switch (item.status)
+                    {
+                        case "obtained": tag = "【已取得】"; color = new Color(0.45f, 0.85f, 0.55f); break;
+                        case "pending": tag = "【待澄清】"; color = new Color(0.98f, 0.82f, 0.40f); break;
+                        default: tag = "【尚未取得】"; color = new Color(0.95f, 0.55f, 0.50f); break;
+                    }
+                    coachPanel.AddParagraph($"{tag}{item.field}\n{item.note}", color);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(response.priority_hint))
+            {
+                coachPanel.AddHeading("下一步優先補問");
+                coachPanel.AddParagraph(response.priority_hint);
+            }
+        }
+
+        private void AddProgressBar(string label, int percent)
+        {
+            percent = Mathf.Clamp(percent, 0, 100);
+            coachPanel.AddBar(label, percent / 100f, percent + "%", ScoreColor(percent / 100f));
+        }
+
+        private void OnCoachError(string errorMsg)
+        {
+            EndCoachRequest();
+            if (statusHintText != null) statusHintText.text = "教練暫時無法使用，請稍後再試。";
+            RestoreAfterCoach();
+        }
+
+        private void RestoreAfterCoach()
+        {
+            MarkActivity();
+            if (!isSessionActive || endRequested) return;
+            SetInputInteractable(true);
+            SetCoachButtonsInteractable(true);
+        }
+
+        private void SetCoachButtonsInteractable(bool interactable)
+        {
+            if (helpButton != null) helpButton.interactable = interactable;
+            if (inventoryButton != null) inventoryButton.interactable = interactable;
+        }
+
+        private void SetSessionButtonsVisible(bool visible)
+        {
+            if (helpButton != null) helpButton.gameObject.SetActive(visible);
+            if (inventoryButton != null) inventoryButton.gameObject.SetActive(visible);
+            if (endSessionButton != null) endSessionButton.gameObject.SetActive(visible);
+        }
+
+        // =========================================================================
+        // 結算報告面板 (場景未綁定 summaryPanel 時，以程式建立)
+        // =========================================================================
+        private static Color ScoreColor(float ratio)
+        {
+            if (ratio >= 0.8f) return new Color(0.30f, 0.75f, 0.45f);
+            if (ratio >= 0.5f) return new Color(0.30f, 0.60f, 0.90f);
+            return new Color(0.95f, 0.60f, 0.25f);
+        }
+
+        private void AddScoreBar(string label, int value, int max)
+        {
+            float ratio = max > 0 ? Mathf.Clamp01((float)value / max) : 0f;
+            coachPanel.AddBar(label, ratio, $"{value}/{max}", ScoreColor(ratio));
+        }
+
+        private void AddList(string heading, string[] items)
+        {
+            if (items == null || items.Length == 0) return;
+            coachPanel.AddHeading(heading);
+            foreach (var item in items)
+            {
+                if (!string.IsNullOrWhiteSpace(item)) coachPanel.AddParagraph("．" + item);
+            }
+        }
+
+        private void ShowFinalReport(SessionEndResponse response)
+        {
+            if (coachPanel == null) return;
+            var rep = response.evaluation_report;
+            coachPanel.Open("訪談結算報告");
+
+            if (rep == null)
+            {
+                coachPanel.AddParagraph("（沒有收到評估報告）");
+                return;
+            }
+
+            coachPanel.AddBigScore($"{rep.total_score} / 100",
+                $"最終關係指數 {response.final_rapport_score}，共 {response.total_dialogue_turns} 輪對話");
+
+            coachPanel.AddHeading("六大面向評分");
+            AddScoreBar("開場與關係建立", rep.dimension_1_rapport, 15);
+            AddScoreBar("提問技巧", rep.dimension_2_questioning, 25);
+            AddScoreBar("同理與非評價", rep.dimension_3_empathy, 20);
+            AddScoreBar("家庭中心", rep.dimension_4_family_centered, 15);
+            AddScoreBar("IFSP 資訊完整度", rep.dimension_5_ifsp_info, 20);
+            AddScoreBar("時間掌握", rep.dimension_6_time_mgmt, 5);
+
+            if (!string.IsNullOrEmpty(rep.feedback_comments))
+            {
+                coachPanel.AddHeading("整體講評");
+                coachPanel.AddParagraph(rep.feedback_comments);
+            }
+
+            AddList("表現優異", rep.strengths);
+            AddList("建議改進", rep.suggestions);
+
+            if (!string.IsNullOrEmpty(rep.best_question))
+            {
+                coachPanel.AddHeading("最佳提問");
+                coachPanel.AddParagraph("「" + rep.best_question + "」", new Color(0.65f, 0.95f, 0.75f));
+                if (!string.IsNullOrEmpty(rep.best_question_reason))
+                    coachPanel.AddParagraph(rep.best_question_reason, new Color(0.65f, 0.68f, 0.75f));
+            }
+
+            if (!string.IsNullOrEmpty(rep.suboptimal_question))
+            {
+                coachPanel.AddHeading("可再加強的提問");
+                coachPanel.AddParagraph("「" + rep.suboptimal_question + "」", new Color(0.98f, 0.82f, 0.40f));
+                if (!string.IsNullOrEmpty(rep.suggested_alternative))
+                    coachPanel.AddParagraph("建議改問：" + rep.suggested_alternative, new Color(0.65f, 0.95f, 0.75f));
             }
         }
 

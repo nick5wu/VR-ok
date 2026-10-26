@@ -16,6 +16,8 @@ namespace XRInterview.AI
         [SerializeField] private int timeoutSeconds = 30;
         [Tooltip("結算 (session/end) 需呼叫 Gemini 評分，耗時較長，另設較長逾時")]
         [SerializeField] private int endSessionTimeoutSeconds = 120;
+        [Tooltip("教練指令 (暫停求救 / 盤點資訊) 需呼叫 Gemini，另設逾時")]
+        [SerializeField] private int coachTimeoutSeconds = 60;
 
         [Tooltip("(選用) Supabase 登入 Token。有值時以 Authorization: Bearer 送出；留空則走後端的 VR 過渡通道 (需 ALLOW_VR_UNAUTHENTICATED=true)")]
         [SerializeField] private string authToken = string.Empty;
@@ -72,6 +74,28 @@ namespace XRInterview.AI
         {
             string url = $"{apiBaseUrl.TrimEnd('/')}/api/session/end";
             StartCoroutine(SendPostRequestCoroutine(url, requestData, onSuccess, onError, endSessionTimeoutSeconds));
+        }
+
+        /// <summary>
+        /// 教練「暫停求救」(POST /api/coach/help)：不寫入對話紀錄，NPC 凍結
+        /// </summary>
+        public void RequestCoachHelp(CoachRequest requestData,
+            Action<CoachHelpResponse> onSuccess,
+            Action<string> onError)
+        {
+            string url = $"{apiBaseUrl.TrimEnd('/')}/api/coach/help";
+            StartCoroutine(SendPostRequestCoroutine(url, requestData, onSuccess, onError, coachTimeoutSeconds));
+        }
+
+        /// <summary>
+        /// 教練「盤點資訊」(POST /api/coach/inventory)
+        /// </summary>
+        public void RequestInventory(CoachRequest requestData,
+            Action<InventoryResponse> onSuccess,
+            Action<string> onError)
+        {
+            string url = $"{apiBaseUrl.TrimEnd('/')}/api/coach/inventory";
+            StartCoroutine(SendPostRequestCoroutine(url, requestData, onSuccess, onError, coachTimeoutSeconds));
         }
 
         /// <summary>
