@@ -185,7 +185,19 @@ namespace XRInterview.AI
             };
 
             Debug.Log($"[DialogueManager_AI] 發送場次初始化請求 -> User: {startReq.user_id}, Case: {startReq.case_id}");
+            EnsureApiClient();
             GeminiApiClient.Instance.StartSession(startReq, OnSessionStartSuccess, OnSessionStartError);
+        }
+
+        /// <summary>
+        /// 直接從訪談場景按 Play（未經主選單）時 [NetworkManager] 不存在，自動建立一個使用預設網址的 API 用戶端
+        /// </summary>
+        private void EnsureApiClient()
+        {
+            if (GeminiApiClient.Instance != null) return;
+
+            Debug.LogWarning("[DialogueManager_AI] 場景中找不到 [NetworkManager]，自動建立 GeminiApiClient (預設網址)。正式流程請由 SampleScene 1 進入。");
+            new GameObject("[NetworkManager]").AddComponent<GeminiApiClient>();
         }
 
         private void OnSessionStartSuccess(SessionStartResponse response)
