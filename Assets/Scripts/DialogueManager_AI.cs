@@ -51,6 +51,7 @@ namespace XRInterview.AI
         private int currentDefenseScore = 50;
         private int currentTrustScore = 50;
         private bool isSessionActive = false;
+        private float sessionStartTime;
 
         public static DialogueManager_AI Instance { get; private set; }
 
@@ -184,13 +185,26 @@ namespace XRInterview.AI
             };
 
             Debug.Log($"[DialogueManager_AI] 發送場次初始化請求 -> User: {startReq.user_id}, Case: {startReq.case_id}");
+            EnsureApiClient();
             GeminiApiClient.Instance.StartSession(startReq, OnSessionStartSuccess, OnSessionStartError);
+        }
+
+        /// <summary>
+        /// 直接從訪談場景按 Play（未經主選單）時 [NetworkManager] 不存在，自動建立一個使用預設網址的 API 用戶端
+        /// </summary>
+        private void EnsureApiClient()
+        {
+            if (GeminiApiClient.Instance != null) return;
+
+            Debug.LogWarning("[DialogueManager_AI] 場景中找不到 [NetworkManager]，自動建立 GeminiApiClient (預設網址)。正式流程請由 SampleScene 1 進入。");
+            new GameObject("[NetworkManager]").AddComponent<GeminiApiClient>();
         }
 
         private void OnSessionStartSuccess(SessionStartResponse response)
         {
             currentSessionId = response.session_id;
             isSessionActive = true;
+            sessionStartTime = Time.realtimeSinceStartup;
             SetInputInteractable(true);
             if (statusHintText != null) statusHintText.text = string.Empty;
 
@@ -315,7 +329,8 @@ namespace XRInterview.AI
 
             SessionEndRequest endReq = new SessionEndRequest
             {
-                session_id = currentSessionId
+                session_id = currentSessionId,
+                actual_duration = Mathf.RoundToInt((Time.realtimeSinceStartup - sessionStartTime) / 60f)
             };
 
             GeminiApiClient.Instance.EndSession(endReq, OnSessionEndSuccess, OnSessionEndError);
@@ -324,7 +339,9 @@ namespace XRInterview.AI
         private void OnSessionEndSuccess(SessionEndResponse response)
         {
             if (statusHintText != null) statusHintText.text = "訪談已順利結束！";
-            AppendDialogueBubble("【系統】", $"🎉 訪談結束！最終關係分數：{response.final_rapport_score}，總對話輪數：{response.total_dialogue_turns}", Color.green);
+            var rep = response.evaluation_report;
+            int totalScore = rep != null ? rep.total_score : 0;
+            AppendDialogueBubble("【系統】", $"🎉 訪談結束！AI 評分總分：{totalScore}/100，目前關係指數：{currentRapportScore}", Color.green);
 
             // 顯示結算報告面板
             if (summaryPanel != null)
@@ -333,24 +350,23 @@ namespace XRInterview.AI
 
                 if (summaryScoreText != null)
                 {
-                    summaryScoreText.text = $"最終關係建立指數: {response.final_rapport_score}";
+                    summaryScoreText.text = $"AI 評分總分: {totalScore}/100";
                 }
 
-                if (summaryCommentText != null && response.evaluation_report != null)
+                if (summaryCommentText != null && rep != null)
                 {
-                    var rep = response.evaluation_report;
-                    summaryCommentText.text = $"<b>【整體表現評語】</b>\n{rep.overall_summary}\n\n" +
+                    summaryCommentText.text = $"<b>【整體表現評語】</b>\n{rep.feedback_comments}\n\n" +
                                               $"<b>【六大專業向度評分】</b>\n" +
-                                              $"• 同理心與支持: {rep.empathy_score}分\n" +
-                                              $"• 開放式提問: {rep.questioning_score}分\n" +
-                                              $"• 傾聽與回應: {rep.active_listening_score}分\n" +
-                                              $"• 引導與問題探討: {rep.problem_solving_score}分\n" +
-                                              $"• 信任建立: {rep.rapport_building_score}分\n" +
-                                              $"• 專業態度: {rep.professional_attitude_score}分";
+                                              $"• 關係建立: {rep.dimension_1_rapport}/15\n" +
+                                              $"• 提問技巧: {rep.dimension_2_questioning}/25\n" +
+                                              $"• 同理心: {rep.dimension_3_empathy}/20\n" +
+                                              $"• 家庭中心: {rep.dimension_4_family_centered}/15\n" +
+                                              $"• IFSP 資訊蒐集: {rep.dimension_5_ifsp_info}/20\n" +
+                                              $"• 時間管理: {rep.dimension_6_time_mgmt}/5";
                 }
             }
 
-            Debug.Log($"<color=green>[DialogueManager_AI] 結算完成！報告摘要: {response.evaluation_report?.overall_summary}</color>");
+            Debug.Log($"<color=green>[DialogueManager_AI] 結算完成！報告摘要: {response.evaluation_report?.feedback_comments}</color>");
         }
 
         private void OnSessionEndError(string errorMsg)

@@ -60,28 +60,36 @@ namespace XRInterview.AI
     public class SessionEndRequest
     {
         public string session_id;         // 當前結算的 Session ID
+        public int actual_duration;       // 實際訪談時長 (分鐘)，後端寫入場次紀錄
     }
 
     [Serializable]
     public class SessionEndResponse
     {
+        public bool success;
         public string session_id;
-        public int final_rapport_score;       // 最終關係分數
-        public int total_dialogue_turns;      // 總對話輪數
-        public InterviewEvaluationReport evaluation_report; // AI 自動產生的評估報告
+        public InterviewEvaluationReport evaluation_report; // 後端 AI 六大面向評分 (100 分制)
     }
 
+    /// <summary>
+    /// 對應後端 POST /api/session/end 的 evaluation_report (AIScoreRecord)
+    /// </summary>
     [Serializable]
     public class InterviewEvaluationReport
     {
-        public string overall_summary;        // 整體評語
-        public int empathy_score;             // 同理心與支持技巧 (0-100)
-        public int questioning_score;         // 開放式提問技巧 (0-100)
-        public int active_listening_score;    // 傾聽與回應能力 (0-100)
-        public int problem_solving_score;     // 問題探討與引導能力 (0-100)
-        public int rapport_building_score;    // 信任關係建立 (0-100)
-        public int professional_attitude_score;// 專業倫理與態度 (0-100)
-        public string[] key_strengths;        // 表現優異重點
-        public string[] improvement_tips;     // 建議改進方向
+        public int dimension_1_rapport;         // 關係建立 (0-15)
+        public int dimension_2_questioning;     // 提問技巧 (0-25)
+        public int dimension_3_empathy;         // 同理心 (0-20)
+        public int dimension_4_family_centered; // 家庭中心 (0-15)
+        public int dimension_5_ifsp_info;       // IFSP 資訊蒐集 (0-20)
+        public int dimension_6_time_mgmt;       // 時間管理 (0-5)
+        public int total_score;                 // 總分 (0-100)
+        public string feedback_comments;        // 整體評語
+        public string[] strengths;              // 表現優異重點
+        public string[] suggestions;            // 建議改進方向
+        public string best_question;            // 最佳提問
+        public string best_question_reason;
+        public string suboptimal_question;      // 可改進的提問
+        public string suggested_alternative;    // 建議替代問法
     }
 }

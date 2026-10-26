@@ -1177,13 +1177,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 1309509171}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 061cdb63d74c71e4fafcaa19e2c5996f, type: 3}
+  m_Script: {fileID: 11500000, guid: 3dd492ade017447498215453c1f3b5bb, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::DialogueManager
+  m_EditorClassIdentifier: Assembly-CSharp::XRInterview.AI.DialogueManager_AI
   inputField: {fileID: 1286491549}
-  historyContent: {fileID: 1286491548}
   submitButton: {fileID: 1286491546}
+  endSessionButton: {fileID: 0}
+  historyContent: {fileID: 1286491548}
+  scrollRect: {fileID: 0}
   dialogueItemPrefab: {fileID: 4986067367414043233, guid: e1b22b90520f867429a5be3babede2a2, type: 3}
+  rapportSlider: {fileID: 0}
+  rapportScoreText: {fileID: 0}
+  statusHintText: {fileID: 0}
+  summaryPanel: {fileID: 0}
+  summaryScoreText: {fileID: 0}
+  summaryCommentText: {fileID: 0}
+  targetNPCAnim: {fileID: 0}
+  currentUserId: trainee_001
+  currentCaseId: persona_1
+  selectedDuration: 30
+  currentSessionId: 
 --- !u!114 &1309509175
 MonoBehaviour:
   m_ObjectHideFlags: 0

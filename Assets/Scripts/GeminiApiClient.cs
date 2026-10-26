@@ -15,6 +15,21 @@ namespace XRInterview.AI
         [SerializeField] private string apiBaseUrl = "http://127.0.0.1:3001";
         [SerializeField] private int timeoutSeconds = 30;
 
+        // 後端 requireAuth 以此標頭辨識 Unity VR 實機連線 (過渡期，需後端 ALLOW_VR_UNAUTHENTICATED=true)
+        private const string ClientPlatformHeader = "X-Client-Platform";
+        private const string ClientPlatformValue = "unity-vr";
+
+        // Supabase access token (JWT)。取得後由外部呼叫 SetAccessToken 設定，之後每個請求都會帶上 Authorization: Bearer
+        private string accessToken = string.Empty;
+
+        /// <summary>
+        /// 設定 Supabase 登入後取得的 JWT；傳入空字串則清除，回到過渡期的 VR 標頭模式
+        /// </summary>
+        public void SetAccessToken(string token)
+        {
+            accessToken = token ?? string.Empty;
+        }
+
         private void Awake()
         {
             if (Instance == null)
@@ -83,6 +98,11 @@ namespace XRInterview.AI
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
                 webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader(ClientPlatformHeader, ClientPlatformValue);
+                if (!string.IsNullOrEmpty(accessToken))
+                {
+                    webRequest.SetRequestHeader("Authorization", $"Bearer {accessToken}");
+                }
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();
@@ -91,6 +111,10 @@ namespace XRInterview.AI
                     webRequest.result == UnityWebRequest.Result.ProtocolError)
                 {
                     string errorMsg = $"[API 伺服器錯誤] URL: {endpointUrl}, 代碼: {webRequest.responseCode}, 訊息: {webRequest.error}\n回應: {webRequest.downloadHandler?.text}";
+                    if (webRequest.responseCode == 401)
+                    {
+                        errorMsg += "\n[提示] 後端要求身分驗證：請設定 Supabase JWT (SetAccessToken)，或在後端測試環境設定 ALLOW_VR_UNAUTHENTICATED=true。";
+                    }
                     Debug.LogError(errorMsg);
                     onError?.Invoke(errorMsg);
                 }

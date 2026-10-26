@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bcc373e5fab9414ca2d82132cf7977a, type: 3}
   m_Name: persona_5
   m_EditorClassIdentifier: Assembly-CSharp::VRPersonaData
-  personaId: persona5
-  personaName: "\u5C0F\u9673\u5BB6"
+  personaId: persona_5
+  personaName: "\u5C0F\u99A8\u5BB6"
   hiddenPainPoint: 
   avatarPortrait: {fileID: 0}
   avatar3DPrefab: {fileID: 6182122206850550223, guid: b103270d51cac0b4ba0510b8c52021da, type: 3}
