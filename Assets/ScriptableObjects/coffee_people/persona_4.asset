@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: persona_4
   m_EditorClassIdentifier: Assembly-CSharp::VRPersonaData
   personaId: persona_4
-  personaName: "\u5C0F\u5149\u5BB6"
+  personaName: "\u68CB\u68CB\u5BB6"
   hiddenPainPoint: 
   avatarPortrait: {fileID: 0}
   avatar3DPrefab: {fileID: 7976693907317355325, guid: e93e1a9550ede2b4fa424c3f68d7ec69, type: 3}

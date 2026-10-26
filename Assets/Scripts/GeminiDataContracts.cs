@@ -12,6 +12,7 @@ namespace XRInterview.AI
     {
         public string user_id;            // 學員 ID (例如 "trainee_001")
         public string case_id;            // 個案 ID (例如 "persona_1")
+        public string scene_id;           // 目前 Unity 場景名稱 (例如 "home1"、"coffee1")
         public string selected_duration;  // 預計訪談時間 (例如 "30" 分鐘)
     }
 
@@ -74,14 +75,20 @@ namespace XRInterview.AI
     [Serializable]
     public class InterviewEvaluationReport
     {
-        public string overall_summary;        // 整體評語
-        public int empathy_score;             // 同理心與支持技巧 (0-100)
-        public int questioning_score;         // 開放式提問技巧 (0-100)
-        public int active_listening_score;    // 傾聽與回應能力 (0-100)
-        public int problem_solving_score;     // 問題探討與引導能力 (0-100)
-        public int rapport_building_score;    // 信任關係建立 (0-100)
-        public int professional_attitude_score;// 專業倫理與態度 (0-100)
-        public string[] key_strengths;        // 表現優異重點
-        public string[] improvement_tips;     // 建議改進方向
+        // 與後端 evaluateSession 回傳欄位一致 (總分 100)
+        public int dimension_1_rapport;           // 開場與關係建立 (滿分 15)
+        public int dimension_2_questioning;       // 提問技巧 (滿分 25)
+        public int dimension_3_empathy;           // 同理心 (滿分 20)
+        public int dimension_4_family_centered;   // 家庭中心 (滿分 15)
+        public int dimension_5_ifsp_info;         // IFSP 資訊完整度 (滿分 20)
+        public int dimension_6_time_mgmt;         // 時間掌握 (滿分 5)
+        public int total_score;                   // 總分 (0-100)
+        public string feedback_comments;          // 整體評語
+        public string[] strengths;                // 表現優異重點
+        public string[] suggestions;              // 建議改進方向
+        public string best_question;              // 最佳提問
+        public string best_question_reason;
+        public string suboptimal_question;        // 待改進提問
+        public string suggested_alternative;      // 建議替代問法
     }
 }

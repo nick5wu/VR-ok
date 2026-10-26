@@ -12,8 +12,19 @@ namespace XRInterview.AI
 
         [Header("API 伺服器設定")]
         [Tooltip("Web Express 中介伺服器基礎網址 (建議使用 http://127.0.0.1:3001 防止 Windows IPv6 解析逾時)")]
-        [SerializeField] private string apiBaseUrl = "http://127.0.0.1:3001";
+        [SerializeField] private string apiBaseUrl = "https://xr-interview-backend-1019562597305.asia-east1.run.app";
         [SerializeField] private int timeoutSeconds = 30;
+
+        [Tooltip("(選用) Supabase 登入 Token。有值時以 Authorization: Bearer 送出；留空則走後端的 VR 過渡通道 (需 ALLOW_VR_UNAUTHENTICATED=true)")]
+        [SerializeField] private string authToken = string.Empty;
+
+        /// <summary>
+        /// 登入後由外部設定 Supabase access token
+        /// </summary>
+        public void SetAuthToken(string token)
+        {
+            authToken = token ?? string.Empty;
+        }
 
         private void Awake()
         {
@@ -83,6 +94,11 @@ namespace XRInterview.AI
                 webRequest.uploadHandler = new UploadHandlerRaw(bodyRaw);
                 webRequest.downloadHandler = new DownloadHandlerBuffer();
                 webRequest.SetRequestHeader("Content-Type", "application/json");
+                webRequest.SetRequestHeader("x-client-platform", "unity-vr");
+                if (!string.IsNullOrEmpty(authToken))
+                {
+                    webRequest.SetRequestHeader("Authorization", "Bearer " + authToken);
+                }
                 webRequest.timeout = timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();

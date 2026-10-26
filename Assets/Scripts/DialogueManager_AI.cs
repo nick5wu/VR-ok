@@ -180,10 +180,11 @@ namespace XRInterview.AI
             {
                 user_id = currentUserId,
                 case_id = currentCaseId,
+                scene_id = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name,
                 selected_duration = selectedDuration
             };
 
-            Debug.Log($"[DialogueManager_AI] 發送場次初始化請求 -> User: {startReq.user_id}, Case: {startReq.case_id}");
+            Debug.Log($"[DialogueManager_AI] 發送場次初始化請求 -> User: {startReq.user_id}, Case: {startReq.case_id}, Scene: {startReq.scene_id}");
             GeminiApiClient.Instance.StartSession(startReq, OnSessionStartSuccess, OnSessionStartError);
         }
 
@@ -339,18 +340,18 @@ namespace XRInterview.AI
                 if (summaryCommentText != null && response.evaluation_report != null)
                 {
                     var rep = response.evaluation_report;
-                    summaryCommentText.text = $"<b>【整體表現評語】</b>\n{rep.overall_summary}\n\n" +
-                                              $"<b>【六大專業向度評分】</b>\n" +
-                                              $"• 同理心與支持: {rep.empathy_score}分\n" +
-                                              $"• 開放式提問: {rep.questioning_score}分\n" +
-                                              $"• 傾聽與回應: {rep.active_listening_score}分\n" +
-                                              $"• 引導與問題探討: {rep.problem_solving_score}分\n" +
-                                              $"• 信任建立: {rep.rapport_building_score}分\n" +
-                                              $"• 專業態度: {rep.professional_attitude_score}分";
+                    summaryCommentText.text = $"<b>【整體表現評語】</b>\n{rep.feedback_comments}\n\n" +
+                                              $"<b>【六大面向評分（總分 {rep.total_score}/100）】</b>\n" +
+                                              $"• 開場與關係建立: {rep.dimension_1_rapport}/15\n" +
+                                              $"• 提問技巧: {rep.dimension_2_questioning}/25\n" +
+                                              $"• 同理心: {rep.dimension_3_empathy}/20\n" +
+                                              $"• 家庭中心: {rep.dimension_4_family_centered}/15\n" +
+                                              $"• IFSP 資訊完整度: {rep.dimension_5_ifsp_info}/20\n" +
+                                              $"• 時間掌握: {rep.dimension_6_time_mgmt}/5";
                 }
             }
 
-            Debug.Log($"<color=green>[DialogueManager_AI] 結算完成！報告摘要: {response.evaluation_report?.overall_summary}</color>");
+            Debug.Log($"<color=green>[DialogueManager_AI] 結算完成！總分: {response.evaluation_report?.total_score}，評語: {response.evaluation_report?.feedback_comments}</color>");
         }
 
         private void OnSessionEndError(string errorMsg)

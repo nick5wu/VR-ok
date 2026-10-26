@@ -880,7 +880,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ffdd95d37b2b467429d2a00d89687e6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::XRInterview.AI.GeminiApiClient
-  apiBaseUrl: http://localhost:3001
+  apiBaseUrl: https://xr-interview-backend-1019562597305.asia-east1.run.app
   timeoutSeconds: 15
 --- !u!4 &145039907
 Transform:
