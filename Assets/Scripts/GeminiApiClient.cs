@@ -14,6 +14,8 @@ namespace XRInterview.AI
         [Tooltip("Web Express 中介伺服器基礎網址 (建議使用 http://127.0.0.1:3001 防止 Windows IPv6 解析逾時)")]
         [SerializeField] private string apiBaseUrl = "https://xr-interview-backend-1019562597305.asia-east1.run.app";
         [SerializeField] private int timeoutSeconds = 30;
+        [Tooltip("結算 (session/end) 需呼叫 Gemini 評分，耗時較長，另設較長逾時")]
+        [SerializeField] private int endSessionTimeoutSeconds = 120;
 
         [Tooltip("(選用) Supabase 登入 Token。有值時以 Authorization: Bearer 送出；留空則走後端的 VR 過渡通道 (需 ALLOW_VR_UNAUTHENTICATED=true)")]
         [SerializeField] private string authToken = string.Empty;
@@ -69,6 +71,17 @@ namespace XRInterview.AI
             Action<string> onError)
         {
             string url = $"{apiBaseUrl.TrimEnd('/')}/api/session/end";
+            StartCoroutine(SendPostRequestCoroutine(url, requestData, onSuccess, onError, endSessionTimeoutSeconds));
+        }
+
+        /// <summary>
+        /// 中止場次 (POST /api/session/abort)：閒置逾時或中途離開，不評分
+        /// </summary>
+        public void AbortSession(SessionAbortRequest requestData,
+            Action<SessionAbortResponse> onSuccess,
+            Action<string> onError)
+        {
+            string url = $"{apiBaseUrl.TrimEnd('/')}/api/session/abort";
             StartCoroutine(SendPostRequestCoroutine(url, requestData, onSuccess, onError));
         }
 
@@ -78,7 +91,8 @@ namespace XRInterview.AI
         private IEnumerator SendPostRequestCoroutine<TReq, TRes>(string endpointUrl, 
             TReq requestData, 
             Action<TRes> onSuccess, 
-            Action<string> onError)
+            Action<string> onError,
+            int timeoutOverrideSeconds = 0)
         {
             // 防呆處理：若網址含有 localhost，自動替換為 127.0.0.1 避免 Windows 下 IPv6 (::1) 解析延遲導致逾時
             if (endpointUrl.Contains("://localhost"))
@@ -99,7 +113,7 @@ namespace XRInterview.AI
                 {
                     webRequest.SetRequestHeader("Authorization", "Bearer " + authToken);
                 }
-                webRequest.timeout = timeoutSeconds;
+                webRequest.timeout = timeoutOverrideSeconds > 0 ? timeoutOverrideSeconds : timeoutSeconds;
 
                 yield return webRequest.SendWebRequest();
 

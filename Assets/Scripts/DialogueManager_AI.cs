@@ -46,6 +46,21 @@ namespace XRInterview.AI
         [SerializeField] private string selectedDuration = "30";
         [SerializeField] private string currentSessionId = string.Empty;
 
+        [Header("=== 時間與閒置控制 ===")]
+        [Tooltip("閒置超過此分鐘數未操作，場次自動中止 (不評分)")]
+        [SerializeField] private float idleTimeoutMinutes = 10f;
+        [Tooltip("倒數計時文字 (選用，留空會自動建立於右上角)")]
+        [SerializeField] private TMP_Text timerText;
+
+        private float sessionStartRealtime;
+        private float lastActivityRealtime;
+        private float endConfirmUntil;
+        private bool endRequested;
+        private bool isQuitting;
+        private TMP_Text endButtonLabel;
+        private const string EndLabelNormal = "結束訪談";
+        private const string EndLabelConfirm = "再按一次確認";
+
         // 當前訪談狀態數值
         private int currentRapportScore = 50;
         private int currentDefenseScore = 50;
@@ -129,6 +144,13 @@ namespace XRInterview.AI
             // 嘗試從 InterviewMenuManager 或 PlayerPrefs 讀取選定的個案資訊
             LoadSelectedCaseInfo();
 
+            // 讀取登入帳號 (user_id) 與選單選定的訪談時長
+            currentUserId = PlayerPrefs.GetString(InterviewMenuManager.CURRENT_USER_KEY, currentUserId);
+            string savedDuration = PlayerPrefs.GetString(InterviewMenuManager.DURATION_KEY, selectedDuration);
+            selectedDuration = (savedDuration == "30" || savedDuration == "60" || savedDuration == "90") ? savedDuration : "30";
+
+            BuildRuntimeUI();
+
             // 綁定 UI 按鈕事件
             if (submitButton != null)
             {
@@ -142,7 +164,12 @@ namespace XRInterview.AI
 
             if (endSessionButton != null)
             {
-                endSessionButton.onClick.AddListener(EndInterviewSession);
+                endSessionButton.onClick.AddListener(OnEndButtonClicked);
+            }
+
+            if (inputField != null)
+            {
+                inputField.onValueChanged.AddListener(_ => MarkActivity());
             }
 
             if (summaryPanel != null)
@@ -192,6 +219,9 @@ namespace XRInterview.AI
         {
             currentSessionId = response.session_id;
             isSessionActive = true;
+            endRequested = false;
+            sessionStartRealtime = Time.realtimeSinceStartup;
+            lastActivityRealtime = sessionStartRealtime;
             SetInputInteractable(true);
             if (statusHintText != null) statusHintText.text = string.Empty;
 
@@ -246,6 +276,7 @@ namespace XRInterview.AI
 
             string userMessage = inputField.text.Trim();
             inputField.text = string.Empty;
+            MarkActivity();
 
             // 1. 生成學員端發話氣泡
             AppendDialogueBubble("【學員】", userMessage, new Color(0.2f, 0.6f, 1.0f)); // 藍色字體
@@ -268,6 +299,7 @@ namespace XRInterview.AI
 
         private void OnDialogueSuccess(GeminiResponseData response)
         {
+            MarkActivity();
             SetInputInteractable(true);
             if (statusHintText != null) statusHintText.text = string.Empty;
 
@@ -310,13 +342,18 @@ namespace XRInterview.AI
                 return;
             }
 
+            if (endRequested) return;
+            endRequested = true;
+
             SetInputInteractable(false);
             isSessionActive = false;
+            SetTimerVisible(false);
             if (statusHintText != null) statusHintText.text = "正在進行訪談結算，生成 AI 評估報告...";
 
             SessionEndRequest endReq = new SessionEndRequest
             {
-                session_id = currentSessionId
+                session_id = currentSessionId,
+                actual_duration = Mathf.RoundToInt(Time.realtimeSinceStartup - sessionStartRealtime)
             };
 
             GeminiApiClient.Instance.EndSession(endReq, OnSessionEndSuccess, OnSessionEndError);
@@ -358,6 +395,177 @@ namespace XRInterview.AI
         {
             if (statusHintText != null) statusHintText.text = "結算請求失敗。";
             AppendDialogueBubble("【系統】", "（無法取得 AI 結算報告，請檢查伺服器狀態）", Color.red);
+        }
+
+        // =========================================================================
+        // 計時、結束按鈕與閒置處理
+        // =========================================================================
+        private void MarkActivity()
+        {
+            lastActivityRealtime = Time.realtimeSinceStartup;
+        }
+
+        private void Update()
+        {
+            if (!isSessionActive || endRequested) return;
+
+            float now = Time.realtimeSinceStartup;
+            float remaining = int.Parse(selectedDuration) * 60f - (now - sessionStartRealtime);
+            UpdateTimerLabel(remaining);
+
+            if (endConfirmUntil > 0f && now > endConfirmUntil)
+            {
+                endConfirmUntil = 0f;
+                if (endButtonLabel != null) endButtonLabel.text = EndLabelNormal;
+            }
+
+            // 時間到：自動結算並評分
+            if (remaining <= 0f)
+            {
+                AppendDialogueBubble("【系統】", "（訪談時間已到，正在結算…）", Color.yellow);
+                EndInterviewSession();
+                return;
+            }
+
+            // 閒置過久：中止場次 (不評分、不呼叫 Gemini)
+            if (idleTimeoutMinutes > 0f && now - lastActivityRealtime > idleTimeoutMinutes * 60f)
+            {
+                AbortInterviewSession("idle_timeout");
+            }
+        }
+
+        /// <summary>
+        /// 結束訪談按鈕：第一次按下進入確認狀態，4 秒內再按一次才會結算，避免誤觸。
+        /// </summary>
+        public void OnEndButtonClicked()
+        {
+            if (!isSessionActive) return;
+            float now = Time.realtimeSinceStartup;
+            if (endConfirmUntil > 0f && now <= endConfirmUntil)
+            {
+                endConfirmUntil = 0f;
+                EndInterviewSession();
+                return;
+            }
+            endConfirmUntil = now + 4f;
+            if (endButtonLabel != null) endButtonLabel.text = EndLabelConfirm;
+        }
+
+        private void AbortInterviewSession(string reason)
+        {
+            if (string.IsNullOrEmpty(currentSessionId) || !isSessionActive || endRequested) return;
+            endRequested = true;
+            isSessionActive = false;
+            SetInputInteractable(false);
+            SetTimerVisible(false);
+            if (statusHintText != null) statusHintText.text = "因閒置過久，訪談已中止。";
+            AppendDialogueBubble("【系統】", "（閒置過久，本次訪談已中止，未進行評分）", Color.gray);
+            SendAbort(reason);
+        }
+
+        private void SendAbort(string reason)
+        {
+            if (GeminiApiClient.Instance == null || string.IsNullOrEmpty(currentSessionId)) return;
+            GeminiApiClient.Instance.AbortSession(new SessionAbortRequest
+            {
+                session_id = currentSessionId,
+                reason = reason,
+                actual_duration = Mathf.RoundToInt(Time.realtimeSinceStartup - sessionStartRealtime)
+            }, _ => { }, _ => { });
+        }
+
+        private void OnApplicationQuit()
+        {
+            isQuitting = true;
+        }
+
+        private void OnDestroy()
+        {
+            // 離開場景 (例如回到選單) 而尚未結算：通知後台中止。直接關閉程式則由後台過期清理處理。
+            if (!isQuitting && isSessionActive && !endRequested)
+            {
+                endRequested = true;
+                isSessionActive = false;
+                SendAbort("user_aborted");
+            }
+        }
+
+        private void UpdateTimerLabel(float remainingSeconds)
+        {
+            if (timerText == null) return;
+            int sec = Mathf.Max(0, Mathf.CeilToInt(remainingSeconds));
+            timerText.text = $"剩餘 {sec / 60:00}:{sec % 60:00}";
+            timerText.color = sec <= 60 ? new Color(1f, 0.35f, 0.3f) : Color.white;
+        }
+
+        private void SetTimerVisible(bool visible)
+        {
+            if (timerText != null) timerText.gameObject.SetActive(visible);
+        }
+
+        /// <summary>
+        /// 若 Inspector 未綁定，於程式中建立倒數計時文字與結束按鈕 (沿用輸入框字型)。
+        /// </summary>
+        private void BuildRuntimeUI()
+        {
+            RectTransform parent = transform as RectTransform;
+            if (parent == null)
+            {
+                Canvas canvas = GetComponentInParent<Canvas>();
+                parent = canvas != null ? canvas.transform as RectTransform : null;
+            }
+            if (parent == null) return;
+
+            TMP_FontAsset font = inputField != null && inputField.textComponent != null
+                ? inputField.textComponent.font : null;
+
+            if (timerText == null)
+            {
+                var go = new GameObject("TimerText", typeof(RectTransform), typeof(TextMeshProUGUI));
+                var rect = go.GetComponent<RectTransform>();
+                rect.SetParent(parent, false);
+                rect.anchorMin = rect.anchorMax = new Vector2(1f, 1f);
+                rect.pivot = new Vector2(1f, 1f);
+                rect.anchoredPosition = new Vector2(-20f, -20f);
+                rect.sizeDelta = new Vector2(320f, 60f);
+                timerText = go.GetComponent<TextMeshProUGUI>();
+                if (font != null) timerText.font = font;
+                timerText.fontSize = 36f;
+                timerText.alignment = TextAlignmentOptions.Right;
+                timerText.raycastTarget = false;
+                timerText.text = $"剩餘 {int.Parse(selectedDuration):00}:00";
+            }
+
+            if (endSessionButton == null)
+            {
+                var go = new GameObject("EndSessionButton", typeof(RectTransform), typeof(Image), typeof(Button));
+                var rect = go.GetComponent<RectTransform>();
+                rect.SetParent(parent, false);
+                rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
+                rect.pivot = new Vector2(1f, 0f);
+                rect.anchoredPosition = new Vector2(-20f, 20f);
+                rect.sizeDelta = new Vector2(240f, 72f);
+                go.GetComponent<Image>().color = new Color(0.75f, 0.2f, 0.2f, 0.95f);
+                endSessionButton = go.GetComponent<Button>();
+
+                var labelGo = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
+                var labelRect = labelGo.GetComponent<RectTransform>();
+                labelRect.SetParent(rect, false);
+                labelRect.anchorMin = Vector2.zero;
+                labelRect.anchorMax = Vector2.one;
+                labelRect.offsetMin = labelRect.offsetMax = Vector2.zero;
+                endButtonLabel = labelGo.GetComponent<TextMeshProUGUI>();
+                if (font != null) endButtonLabel.font = font;
+                endButtonLabel.fontSize = 30f;
+                endButtonLabel.alignment = TextAlignmentOptions.Center;
+                endButtonLabel.color = Color.white;
+                endButtonLabel.raycastTarget = false;
+                endButtonLabel.text = EndLabelNormal;
+            }
+            else if (endButtonLabel == null)
+            {
+                endButtonLabel = endSessionButton.GetComponentInChildren<TMP_Text>(true);
+            }
         }
 
         // =========================================================================

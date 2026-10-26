@@ -61,6 +61,24 @@ namespace XRInterview.AI
     public class SessionEndRequest
     {
         public string session_id;         // 當前結算的 Session ID
+        public int actual_duration;       // 實際訪談秒數 (供「時間掌握」面向評分)
+    }
+
+    // 中止場次 (閒置逾時或中途離開，不評分、不呼叫 Gemini)
+    [Serializable]
+    public class SessionAbortRequest
+    {
+        public string session_id;
+        public string reason;             // "idle_timeout" | "user_aborted"
+        public int actual_duration;       // 實際訪談秒數
+    }
+
+    [Serializable]
+    public class SessionAbortResponse
+    {
+        public bool success;
+        public string session_id;
+        public string status;
     }
 
     [Serializable]
