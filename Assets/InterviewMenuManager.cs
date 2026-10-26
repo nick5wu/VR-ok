@@ -49,8 +49,6 @@ public class InterviewMenuManager : MonoBehaviour
     public const string DURATION_KEY = "SelectedDuration"; // "30" | "60" | "90"
 
     private static readonly int[] DurationOptions = { 30, 60, 90 };
-    private readonly List<UnityEngine.UI.Image> durationButtonImages = new List<UnityEngine.UI.Image>();
-    private GameObject durationPickerRoot;
 
     void Awake()
     {
@@ -258,97 +256,42 @@ public class InterviewMenuManager : MonoBehaviour
         if (page1Family != null) page1Family.SetActive(page1Family == targetPage);
         if (page2Scene != null) page2Scene.SetActive(page2Scene == targetPage);
 
-        if (targetPage != null && targetPage == page2Scene) EnsureDurationPicker();
+        if (targetPage != null && targetPage == page2Scene) RefreshDurationButtons();
     }
 
     // ==========================================
     // 訪談時長選擇 (30 / 60 / 90 分鐘)
+    // 場景選擇頁 (Page2_Scene) 內的三顆按鈕，onClick 綁定 SetDuration(30/60/90)；
+    // 這裡只負責記錄選擇並標示目前選中的按鈕。
     // ==========================================
 
+    [Header("訪談時長選擇 (依序放入 30 / 60 / 90 分鐘按鈕的 Image，用於標示選中)")]
+    public UnityEngine.UI.Image[] durationButtonImages = new UnityEngine.UI.Image[3];
+
+    [Tooltip("目前選中的按鈕底色")]
+    public Color durationSelectedColor = new Color(0.55f, 0.78f, 1.00f, 1f);
+    [Tooltip("未選中的按鈕底色")]
+    public Color durationNormalColor = Color.white;
+
     /// <summary>
-    /// 設定訪談時長 (分鐘)，供按鈕或外部呼叫。僅接受 30 / 60 / 90。
+    /// 設定訪談時長 (分鐘)，供按鈕 OnClick 呼叫。僅接受 30 / 60 / 90。
     /// </summary>
     public void SetDuration(int minutes)
     {
         if (System.Array.IndexOf(DurationOptions, minutes) < 0) minutes = 30;
         PlayerPrefs.SetString(DURATION_KEY, minutes.ToString());
+        PlayerPrefs.Save();
         RefreshDurationButtons();
     }
 
     private void RefreshDurationButtons()
     {
+        if (durationButtonImages == null) return;
         int current = int.TryParse(PlayerPrefs.GetString(DURATION_KEY, "30"), out int v) ? v : 30;
-        for (int i = 0; i < durationButtonImages.Count; i++)
+        for (int i = 0; i < durationButtonImages.Length && i < DurationOptions.Length; i++)
         {
             if (durationButtonImages[i] == null) continue;
-            durationButtonImages[i].color = DurationOptions[i] == current
-                ? new Color(0.20f, 0.55f, 1.00f, 1f)
-                : new Color(0.25f, 0.25f, 0.30f, 0.9f);
+            durationButtonImages[i].color = DurationOptions[i] == current ? durationSelectedColor : durationNormalColor;
         }
-    }
-
-    /// <summary>
-    /// 在場景選擇頁下方以程式建立 30/60/90 時長按鈕 (沿用頁面既有字型，無須手動拉 UI)。
-    /// </summary>
-    private void EnsureDurationPicker()
-    {
-        if (page2Scene == null) return;
-        if (durationPickerRoot != null) { RefreshDurationButtons(); return; }
-
-        TMP_Text sample = page2Scene.GetComponentInChildren<TMP_Text>(true);
-        TMP_FontAsset font = sample != null ? sample.font : null;
-
-        durationPickerRoot = new GameObject("DurationPicker", typeof(RectTransform));
-        var rootRect = durationPickerRoot.GetComponent<RectTransform>();
-        rootRect.SetParent(page2Scene.transform, false);
-        rootRect.anchorMin = rootRect.anchorMax = new Vector2(0.5f, 0f);
-        rootRect.pivot = new Vector2(0.5f, 0f);
-        rootRect.sizeDelta = new Vector2(620f, 150f);
-        rootRect.anchoredPosition = new Vector2(0f, 20f);
-
-        CreateLabel(rootRect, "訪談時長", font, new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, -4f), new Vector2(0f, 46f), 32);
-
-        durationButtonImages.Clear();
-        for (int i = 0; i < DurationOptions.Length; i++)
-        {
-            int minutes = DurationOptions[i];
-            var btnGo = new GameObject($"Duration_{minutes}", typeof(RectTransform), typeof(UnityEngine.UI.Image), typeof(UnityEngine.UI.Button));
-            var rect = btnGo.GetComponent<RectTransform>();
-            rect.SetParent(rootRect, false);
-            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.sizeDelta = new Vector2(180f, 80f);
-            rect.anchoredPosition = new Vector2((i - 1) * 200f, 0f);
-
-            var img = btnGo.GetComponent<UnityEngine.UI.Image>();
-            durationButtonImages.Add(img);
-            btnGo.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => SetDuration(minutes));
-
-            CreateLabel(rect, $"{minutes} 分鐘", font, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, 32);
-        }
-        RefreshDurationButtons();
-    }
-
-    private static TMP_Text CreateLabel(RectTransform parent, string text, TMP_FontAsset font,
-        Vector2 anchorMin, Vector2 anchorMax, Vector2 anchoredPos, Vector2 sizeDelta, float fontSize)
-    {
-        var go = new GameObject("Label", typeof(RectTransform), typeof(TextMeshProUGUI));
-        var rect = go.GetComponent<RectTransform>();
-        rect.SetParent(parent, false);
-        rect.anchorMin = anchorMin;
-        rect.anchorMax = anchorMax;
-        rect.pivot = new Vector2(0.5f, 1f);
-        rect.anchoredPosition = anchoredPos;
-        rect.sizeDelta = sizeDelta;
-        if (anchorMin == Vector2.zero && anchorMax == Vector2.one) rect.pivot = new Vector2(0.5f, 0.5f);
-
-        var tmp = go.GetComponent<TextMeshProUGUI>();
-        if (font != null) tmp.font = font;
-        tmp.text = text;
-        tmp.fontSize = fontSize;
-        tmp.alignment = TextAlignmentOptions.Center;
-        tmp.color = Color.white;
-        tmp.raycastTarget = false;
-        return tmp;
     }
 }

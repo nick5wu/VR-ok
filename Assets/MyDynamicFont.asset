@@ -66,21 +66,21 @@ MonoBehaviour:
     m_PointSize: 48
     m_Scale: 1
     m_UnitsPerEM: 2048
-    m_LineHeight: 119.70703
-    m_AscentLine: 96.81152
-    m_CapLine: 68
-    m_MeanLine: 49
+    m_LineHeight: 63.843754
+    m_AscentLine: 51.632816
+    m_CapLine: 36.26667
+    m_MeanLine: 26.133335
     m_Baseline: 0
-    m_DescentLine: -22.895508
-    m_SuperscriptOffset: 96.81152
+    m_DescentLine: -12.210938
+    m_SuperscriptOffset: 51.632816
     m_SuperscriptSize: 0.5
-    m_SubscriptOffset: -22.895508
+    m_SubscriptOffset: -12.210938
     m_SubscriptSize: 0.5
-    m_UnderlineOffset: -10.415039
-    m_UnderlineThickness: 5.229492
-    m_StrikethroughOffset: 19.6
-    m_StrikethroughThickness: 5.229492
-    m_TabWidth: 23
+    m_UnderlineOffset: -5.554688
+    m_UnderlineThickness: 2.7890627
+    m_StrikethroughOffset: 10.453334
+    m_StrikethroughThickness: 2.7890627
+    m_TabWidth: 12.266667
   m_Material: {fileID: 5167663253172318755}
   m_SourceFontFileGUID: c22281cb2f1ea1a49b459d83e462520e
   m_CreationSettings:
@@ -122,8 +122,8 @@ MonoBehaviour:
   m_FreeGlyphRects:
   - m_X: 0
     m_Y: 0
-    m_Width: 1023
-    m_Height: 1023
+    m_Width: 4095
+    m_Height: 4095
   m_FontFeatureTable:
     m_MultipleSubstitutionRecords: []
     m_LigatureSubstitutionRecords: []

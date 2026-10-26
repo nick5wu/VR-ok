@@ -259,7 +259,6 @@ namespace XRInterview.AI
             tmp.alignment = align;
             tmp.fontStyle = bold ? FontStyles.Bold : FontStyles.Normal;
             tmp.enableWordWrapping = true;
-            tmp.lineSpacing = -28f;
             tmp.raycastTarget = false;
             return tmp;
         }
